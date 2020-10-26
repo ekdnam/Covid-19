@@ -79,7 +79,9 @@ for tweet_id in ids:
     except tw.error.TweepError:
         print("ERROR WHILE ACCESSING TWEET. ID: " + str(tweet_id))
         pass
-
+    except KeyboardInterrupt:
+        print("EXITING TWEET GETTING PROCESS")
+        raise
 
 indx_manager_write = open("state_managers/index_manager.txt", "w")
 indx_manager_write.write(str(indx))
