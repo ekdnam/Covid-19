@@ -81,7 +81,7 @@ for tweet_id in ids:
         pass
     except KeyboardInterrupt:
         print("EXITING TWEET GETTING PROCESS")
-        raise
+        break
 
 indx_manager_write = open("state_managers/index_manager.txt", "w")
 indx_manager_write.write(str(indx))
