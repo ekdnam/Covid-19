@@ -1,16 +1,9 @@
-#!/usr/bin/env python
 # coding: utf-8
-
-# In[81]:
-
 
 import tweepy as tw
 import pandas as pd
 import os
 import csv
-
-
-# In[82]:
 
 
 consumer_key = "IQFN7RfvSs3107ZGKq1vDE2Um"
@@ -19,37 +12,24 @@ access_token = "1008966897130303488-PNJTNYKhrs5q3YbCIZf2lRGC817JSQ"
 access_token_secret = "89xKwZBAZBUHLVqoayE1gDGfuJeJwzLhnkZ7NnXvOJZ6v"
 
 
-# In[83]:
-
-
 auth = tw.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 api = tw.API(auth, wait_on_rate_limit=True)
-
-
-# In[84]:
-
 
 tweets_df = pd.read_csv("tweet_ids.csv")
 tweets_df.head()
 
 
-# In[85]:
-
-
-index_manager_read = open('state_managers/index_manager.txt', 'r')
+index_manager_read = open("state_managers/index_manager.txt", "r")
 indx = index_manager_read.read()
 print(indx)
 index_manager_read.close()
 
 
-# In[86]:
-
-
 twitter_ids = tweets_df["tweet_id"].tolist()
 i = 0
 indx = int(indx)
-ids = twitter_ids[indx:indx + 899]
+ids = twitter_ids[indx : indx + 899]
 
 text = []
 id_str = []
@@ -68,23 +48,20 @@ coordinates = []
 cnt = 0
 
 
-# In[87]:
-
-
 # ids = twitter_ids[:10]
 
 for tweet_id in ids:
-    
+
     print("\nCurrent indx: " + str(indx))
-    print("Tweets to be processed: " + str(900-cnt))
-    cnt += 1 
+    print("Tweets to be processed: " + str(900 - cnt))
+    cnt += 1
     indx += 1
-    
+
     try:
         print("Processing tweet. ID = " + str(tweet_id))
-        
-        tweet = api.get_status(tweet_id, tweet_mode = 'extended', include_entities = True)
-        
+
+        tweet = api.get_status(tweet_id, tweet_mode="extended", include_entities=True)
+
         text.append(tweet.full_text)
         created_at.append(tweet.created_at)
         id_str.append(tweet.id_str)
@@ -93,35 +70,26 @@ for tweet_id in ids:
         lang.append(tweet.lang)
         time_zone.append(tweet.user.time_zone)
         user_location.append(tweet.user.location)
-        entities_hashtags.append(tweet.entities['hashtags'])
-        entities_symbols.append(tweet.entities['symbols'])
+        entities_hashtags.append(tweet.entities["hashtags"])
+        entities_symbols.append(tweet.entities["symbols"])
         coordinates.append(tweet.coordinates)
-        
-        if(cnt%100 == 0):
+
+        if cnt % 100 == 0:
             print("Text: " + str(tweet.full_text))
     except tw.error.TweepError:
-      print("ERROR WHILE ACCESSING TWEET. ID: " + str(tweet_id))
-      pass
+        print("ERROR WHILE ACCESSING TWEET. ID: " + str(tweet_id))
+        pass
 
 
-# In[88]:
-
-
-indx_manager_write = open('state_managers/index_manager.txt', 'w')
+indx_manager_write = open("state_managers/index_manager.txt", "w")
 indx_manager_write.write(str(indx))
 indx_manager_write.close()
 print(str(indx))
 
 
-# In[89]:
-
-
 text_2 = text
 for ttext in text:
     ttext = ttext.strip("\n")
-
-
-# In[90]:
 
 
 #         text.append(tweet.full_text)
@@ -137,71 +105,65 @@ entities_hashtags_series = pd.Series(entities_hashtags)
 entities_symbols_series = pd.Series(entities_symbols)
 
 
-# In[91]:
-
-
 import pandas as pd
 
 # df = pd.DataFrame(columns=['id_str', 'user_id', 'text', 'created_at', 'entities', 'location', 'lang', 'time_zone'])
-df = pd.DataFrame(columns=['id_str', 'user_id', 'text', 'created_at' ,'lang','entities_hashtags', 'entities_symbols', 'location','coordinates','time_zone'])
+df = pd.DataFrame(
+    columns=[
+        "id_str",
+        "user_id",
+        "text",
+        "created_at",
+        "lang",
+        "entities_hashtags",
+        "entities_symbols",
+        "location",
+        "coordinates",
+        "time_zone",
+    ]
+)
 df.head()
 
-df['id_str'] = id_str
-df['user_id'] = user_id
-df['text'] = text
-df['created_at'] = created_at
+df["id_str"] = id_str
+df["user_id"] = user_id
+df["text"] = text
+df["created_at"] = created_at
 # df['entities'] = entities
-df['location'] = user_location
-df['lang'] = lang
-df['entities_hashtags'] = entities_hashtags_series
-df['entities_symbols'] = entities_symbols_series
-df['lang'] = lang
-df['time_zone'] = time_zone
-df['coordinates'] = coordinates
+df["location"] = user_location
+df["lang"] = lang
+df["entities_hashtags"] = entities_hashtags_series
+df["entities_symbols"] = entities_symbols_series
+df["lang"] = lang
+df["time_zone"] = time_zone
+df["coordinates"] = coordinates
 
 
-# In[92]:
+print(df.head())
 
 
-df.head()
-
-
-# In[93]:
-
-
-file_new = open('state_managers/file_manager.txt', 'r')
+print("opening file manager")
+file_new = open("state_managers/file_manager.txt", "r")
 file_indx = file_new.read()
 file_new.close()
-filename = 'final_tweets_' + file_indx + '.csv'
+filename = "final_tweets_" + file_indx + ".csv"
 # filename = 'final_tweets_1.csv'
-print(filename)
-
-
-# In[94]:
+print("output filename is " + filename)
 
 
 # filename = "final_tweets_6.csv"
-df.to_csv("dataset/"+filename)
-
-
-# In[95]:
+print("writing df to file")
+df.to_csv("dataset/" + filename)
 
 
 file_indx = int(file_indx)
 file_indx += 1
 
-file_write = open('state_managers/file_manager.txt', 'w')
+file_write = open("state_managers/file_manager.txt", "w")
 file_write.write(str(file_indx))
 file_write.close()
 
 
-# In[80]:
-
-
-print(file_indx)
-
-
-# In[37]:
+print("file index is " + str(file_indx))
 
 
 ######## DO NOT RUN #################
@@ -212,7 +174,7 @@ print(file_indx)
 #     for tweet in tweets:
 #         print("writing to txt file. tweet: " + str(tweet))
 #         f.write("%s\n" % str(tweet))
-        
+
 # print("writing to dataset")
 # with open("dates.txt", "w+") as f:
 #     for date in dates:
@@ -220,16 +182,6 @@ print(file_indx)
 #         f.write("%s\n" % str(date))
 
 
-# In[75]:
-
-
 # id_t = tweets_df['tweet_id'].tolist()[1]
 # tweet_2 = api.get_status(id_t, tweet_mode = 'extended')
 # print(tweet_2.full_text)
-
-
-# In[ ]:
-
-
-
-
