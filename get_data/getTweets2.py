@@ -82,6 +82,9 @@ for tweet_id in ids:
     except KeyboardInterrupt:
         print("EXITING TWEET GETTING PROCESS")
         break
+    except OSError:
+        print("Error while printing text on console")
+        pass
 
 indx_manager_write = open("state_managers/index_manager.txt", "w")
 indx_manager_write.write(str(indx))
