@@ -29,7 +29,11 @@ index_manager_read.close()
 twitter_ids = tweets_df["tweet_id"].tolist()
 i = 0
 indx = int(indx)
-ids = twitter_ids[indx : indx + 899]
+last_indx = indx + 899
+if last_indx > len(twitter_ids) - 1:
+    last_indx = len(twitter_ids) - 1
+    print("\n\n\n\nLAST ITERATION\n\n\n\n")
+ids = twitter_ids[indx : last_indx]
 
 text = []
 id_str = []
